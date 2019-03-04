@@ -27,9 +27,11 @@ module Block3
             ,   countElementsInTree
             ,   containsElementInTree
             ,   insertElementIntoTree
-            ,   fromList
+            ,   buildTreeFromList
             ,   removeElementFromTree
             ) where
+
+import Data.List.NonEmpty as NonEmpty
 
 -- Задание 1.
 
@@ -55,7 +57,7 @@ isWeekend day = case day of
     _        -> False
 
 daysToParty :: Day -> Int
-daysToParty day = head (filter willBeFriday [0..6])
+daysToParty day = Prelude.head (Prelude.filter willBeFriday [0..6])
     where
     isFriday Friday = True
     isFriday _      = False
@@ -196,7 +198,7 @@ remainder a b = a `minus` ((a `divide` b) `mult` b)
 
 -- Задание 4. 
 
-data TreeNode a = Leaf | Node [a] (TreeNode a) (TreeNode a)
+data TreeNode a = Leaf | Node (NonEmpty a) (TreeNode a) (TreeNode a)
 
 instance (Show a) => Show (TreeNode a) where
     show Leaf = "[Leaf]"
@@ -208,45 +210,45 @@ isEmptyTree _ = False
 
 countElementsInTree :: TreeNode a -> Int
 countElementsInTree Leaf = 0
-countElementsInTree (Node elements left right) = (length elements) + (countElementsInTree left) + (countElementsInTree right)
+countElementsInTree (Node elements left right) = (NonEmpty.length elements) + (countElementsInTree left) + (countElementsInTree right)
 
 containsElementInTree :: Ord a => TreeNode a -> a -> Bool
 containsElementInTree Leaf _ = False
 containsElementInTree (Node elements left right) target = 
-    let currentX = head elements in
+    let currentX = NonEmpty.head elements in
         if target == currentX then True
         else if target > currentX then containsElementInTree right target
         else containsElementInTree left target
 
 insertElementIntoTree :: Ord a => TreeNode a -> a -> TreeNode a
-insertElementIntoTree Leaf x = (Node [x] Leaf Leaf)
+insertElementIntoTree Leaf x = (Node (fromList [x]) Leaf Leaf)
 insertElementIntoTree (Node elements left right) x = 
-    let currentX = head elements in
-        if currentX == x then (Node (x:elements) left right)
+    let currentX = NonEmpty.head elements in
+        if currentX == x then (Node (x :| (toList elements)) left right)
         else if x > currentX then (Node elements left (insertElementIntoTree right x))
         else (Node elements (insertElementIntoTree left x) right)
 
-fromList :: Ord a => [a] -> TreeNode a
-fromList [] = Leaf
-fromList (x:xs) = insertElementIntoTree (fromList xs) x
+buildTreeFromList :: Ord a => [a] -> TreeNode a
+buildTreeFromList [] = Leaf
+buildTreeFromList (x:xs) = insertElementIntoTree (buildTreeFromList xs) x
 
 removeElementFromTree :: Ord a => TreeNode a -> a -> TreeNode a
 removeElementFromTree Leaf _ = Leaf
 removeElementFromTree (Node elements left right) x = 
-    let currentX = head elements in
-        if currentX == x then removeHelper elements left right
+    let currentX = NonEmpty.head elements in
+        if currentX == x then removeHelper (toList elements) left right
         else if x > currentX then (Node elements left (removeElementFromTree right x))
         else (Node elements (removeElementFromTree left x) right) where
             removeHelper :: [a] -> TreeNode a -> TreeNode a -> TreeNode a
             removeHelper [_] leftNode Leaf  = leftNode
             removeHelper [_] Leaf rightNode = rightNode
-            removeHelper [singe] leftNode rightNode = 
+            removeHelper [_] leftNode rightNode = 
                 let (maximalElementsInLeft, leftWithoutMaxNode) = getAndRemoveMaxNode leftNode in
-                    (Node maximalElementsInLeft leftWithoutMaxNode rightNode) where
+                    (Node (fromList maximalElementsInLeft) leftWithoutMaxNode rightNode) where
                         getAndRemoveMaxNode :: TreeNode a -> ([a], TreeNode a)
                         getAndRemoveMaxNode Leaf = error "can not get max node from empty tree"
-                        getAndRemoveMaxNode (Node elements _ Leaf) = (elements, Leaf)
+                        getAndRemoveMaxNode (Node elements _ Leaf) = ((toList elements), Leaf)
                         getAndRemoveMaxNode (Node elements left right) = 
                             let (maxElements, restoredTree) = getAndRemoveMaxNode right in
                                 (maxElements, (Node elements left restoredTree))
-            removeHelper (_:xs) leftNode rightNode = (Node xs leftNode rightNode)
+            removeHelper (_:xs) leftNode rightNode = (Node (fromList xs) leftNode rightNode)
