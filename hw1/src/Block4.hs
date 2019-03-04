@@ -1,5 +1,5 @@
 {-# LANGUAGE InstanceSigs #-}
-module Block4 (buildPair, buildNonEmpty) where
+module Block4 (Pair(Pair), NonEmpty(..), buildPair, mySplitOn, myJoinWith) where
 
 -- Задание 1.
 
@@ -30,6 +30,26 @@ instance Foldable NonEmpty where
         foldrHelper _ z [] = z
         foldrHelper g z (y:ys) = foldr g z (y :| ys)
 
-buildNonEmpty :: a -> [a] -> NonEmpty a
-buildNonEmpty x xs = x :| xs
+toUsualList :: NonEmpty a -> [a]
+toUsualList (x :| xs) = x:xs
 
+toNonEmpty :: [a] -> NonEmpty a
+toNonEmpty [] = error "can not create non empty, the given list is empty"
+toNonEmpty (x:xs) = x :| xs
+
+-- Задание 2.
+
+mySplitOn :: Char -> String -> NonEmpty String
+mySplitOn sep s = let uncleanedResult = foldr splitAcc ("" :| []) s in
+                        cleanResult uncleanedResult where
+                                    splitAcc :: Char -> NonEmpty String -> NonEmpty String
+                                    splitAcc c (x :| xs) = if c == sep then ("" :| (x:xs)) else ((c:x) :| xs)
+                                    cleanResult :: NonEmpty String -> NonEmpty String
+                                    cleanResult r = toNonEmpty $ filter (/= "") (toUsualList r)
+
+-- Задание 2. Усложенная версия.
+
+myJoinWith :: Char -> NonEmpty String -> String
+myJoinWith sep parts = foldr joinHelper "" parts where
+                        joinHelper :: String -> String -> String
+                        joinHelper newString acc = if (length acc) == 0 then newString else newString ++ [sep] ++ acc

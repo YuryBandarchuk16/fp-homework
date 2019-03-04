@@ -236,19 +236,19 @@ removeElementFromTree :: Ord a => TreeNode a -> a -> TreeNode a
 removeElementFromTree Leaf _ = Leaf
 removeElementFromTree (Node elements left right) x = 
     let currentX = NonEmpty.head elements in
-        if currentX == x then removeHelper (toList elements) left right
+        if currentX == x then removeHelper elements left right
         else if x > currentX then (Node elements left (removeElementFromTree right x))
         else (Node elements (removeElementFromTree left x) right) where
-            removeHelper :: [a] -> TreeNode a -> TreeNode a -> TreeNode a
-            removeHelper [_] leftNode Leaf  = leftNode
-            removeHelper [_] Leaf rightNode = rightNode
-            removeHelper [_] leftNode rightNode = 
+            removeHelper :: NonEmpty a -> TreeNode a -> TreeNode a -> TreeNode a
+            removeHelper (_:|[]) leftNode Leaf  = leftNode
+            removeHelper (_:|[]) Leaf rightNode = rightNode
+            removeHelper (_:|[]) leftNode rightNode = 
                 let (maximalElementsInLeft, leftWithoutMaxNode) = getAndRemoveMaxNode leftNode in
                     (Node (fromList maximalElementsInLeft) leftWithoutMaxNode rightNode) where
                         getAndRemoveMaxNode :: TreeNode a -> ([a], TreeNode a)
                         getAndRemoveMaxNode Leaf = error "can not get max node from empty tree"
-                        getAndRemoveMaxNode (Node elements _ Leaf) = ((toList elements), Leaf)
-                        getAndRemoveMaxNode (Node elements left right) = 
-                            let (maxElements, restoredTree) = getAndRemoveMaxNode right in
-                                (maxElements, (Node elements left restoredTree))
-            removeHelper (_:xs) leftNode rightNode = (Node (fromList xs) leftNode rightNode)
+                        getAndRemoveMaxNode (Node curElements _ Leaf) = ((toList curElements), Leaf)
+                        getAndRemoveMaxNode (Node curElements l r) = 
+                            let (maxElements, restoredTree) = getAndRemoveMaxNode r in
+                                (maxElements, (Node curElements l restoredTree))
+            removeHelper (_:|xs) leftNode rightNode = (Node (fromList xs) leftNode rightNode)
