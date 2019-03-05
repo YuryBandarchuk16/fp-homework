@@ -15,7 +15,7 @@ instance Foldable Pair where
 buildPair :: a -> a -> Pair a
 buildPair x y = (Pair x y)
 
-data NonEmpty a = a :| [a] deriving (Show)
+data NonEmpty a = a :| [a] deriving (Eq, Show)
 
 instance Foldable NonEmpty where
     foldMap :: Monoid b => (a -> b) -> NonEmpty a -> b
@@ -29,6 +29,12 @@ instance Foldable NonEmpty where
         foldrHelper :: (a -> b -> b) -> b -> [a] -> b
         foldrHelper _ z [] = z
         foldrHelper g z (y:ys) = foldr g z (y :| ys)
+
+instance Semigroup (NonEmpty a) where
+    (<>) :: NonEmpty a -> NonEmpty a -> NonEmpty a
+    (<>) x y = foldr makePrepend y x where
+        makePrepend :: a -> NonEmpty a -> NonEmpty a
+        makePrepend v (z :| zs) = (v :| (z:zs))
 
 toUsualList :: NonEmpty a -> [a]
 toUsualList (x :| xs) = x:xs
