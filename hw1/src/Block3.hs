@@ -254,13 +254,3 @@ removeElementFromTree (Node elements left right) x =
                             let (maxElements, restoredTree) = getAndRemoveMaxNode r in
                                 (maxElements, (Node curElements l restoredTree))
             removeHelper (_:|xs) leftNode rightNode = (Node (fromList xs) leftNode rightNode)
-
--- Block 4. Задание 1. Усложненная версия.
-
-instance Foldable TreeNode where
-    foldMap :: Monoid b => (a -> b) -> TreeNode a -> b
-    foldMap _ Leaf = mempty
-    foldMap f (Node elements left right) = 
-        (foldMap f left) `mappend` (mconcat $ toList $ NonEmpty.map f elements) `mappend` (foldMap f right)
-
-kkk = toList Leaf
