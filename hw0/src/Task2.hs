@@ -12,7 +12,7 @@ import Data.Void (Void)
 
 type Neg a = a -> Void
 
--- Тип не заселяем.
+-- Тип не заселяем. В этом уверен на сто процентов!
 doubleNeg :: a -> Neg (Neg a)
 doubleNeg _ = undefined
 
