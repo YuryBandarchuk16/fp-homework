@@ -1,14 +1,16 @@
 {-# LANGUAGE InstanceSigs #-}
-module Block5 (
-    maybeConcat,
-    eitherConcat,
-    semigroupWorksForNonEmpty,
-    ThisOrThat(..),
-    semigroupWorksForThisOrThat,
-    Builder(..),
-    fromString,
-    toString, toStringWithFromStringMakeId,
-    Name(..)) where
+module Block5 
+    (
+      maybeConcat
+    , eitherConcat
+    , semigroupWorksForNonEmpty
+    , ThisOrThat(..)
+    , semigroupWorksForThisOrThat
+    , Builder(..)
+    , fromString
+    , toString, toStringWithFromStringMakeId
+    , Name(..)
+    ) where
 
 import Block4 (NonEmpty (..))
 

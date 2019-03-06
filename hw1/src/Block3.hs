@@ -30,8 +30,17 @@ module Block3
     , insertElementIntoTree
     , buildTreeFromList
     , removeElementFromTree
-    , TreeNode(..)
     , Day(..)
+    , EitherLord(..)
+    , EitherWalls(..)
+    , HasCastle(..)
+    , EitherCastle(..)
+    , EitherChurchOrLibrary(..)
+    , LivingFamily(..)
+    , OneHouse(..)
+    , LivingHouses(..)
+    , City(..)
+    , Tree(..)
     ) where
 
 import Data.List.NonEmpty as NonEmpty
@@ -109,8 +118,8 @@ moveLordInDaCastle :: City -> City
 moveLordInDaCastle (Megapolis eitherCastle eitherCL livingHouses) =
     (Megapolis (moveLordHelper eitherCastle) eitherCL livingHouses) where
         moveLordHelper :: EitherCastle -> EitherCastle
-        moveLordHelper NoCastle = error "Lord can not move in the castle because the city does not have a castle"
-        moveLordHelper (BuiltCastle (Castle Lord _)) = error "Lord can not move in the castle because there is already a lord in the castle"
+        moveLordHelper NoCastle                                  = error "Lord can not move in the castle because the city does not have a castle"
+        moveLordHelper (BuiltCastle (Castle Lord _))             = error "Lord can not move in the castle because there is already a lord in the castle"
         moveLordHelper (BuiltCastle (Castle NoLord eitherWalls)) = BuiltCastle (Castle Lord eitherWalls)
 
 getFamilySize :: LivingFamily -> Int
@@ -201,21 +210,21 @@ remainder a b = a `minus` ((a `divide` b) `mult` b)
 
 -- Задание 4.
 
-data TreeNode a = Leaf | Node (NonEmpty a) (TreeNode a) (TreeNode a)
+data Tree a = Leaf | Node (NonEmpty a) (Tree a) (Tree a)
 
-instance (Show a) => Show (TreeNode a) where
+instance (Show a) => Show (Tree a) where
     show Leaf = "[Leaf]"
     show (Node elements left right) = (show left) ++ ", " ++ (show elements) ++ ", " ++ (show right)
 
-isEmptyTree :: TreeNode a -> Bool
+isEmptyTree :: Tree a -> Bool
 isEmptyTree Leaf = True
 isEmptyTree _    = False
 
-countElementsInTree :: TreeNode a -> Int
+countElementsInTree :: Tree a -> Int
 countElementsInTree Leaf = 0
 countElementsInTree (Node elements left right) = (NonEmpty.length elements) + (countElementsInTree left) + (countElementsInTree right)
 
-containsElementInTree :: Ord a => TreeNode a -> a -> Bool
+containsElementInTree :: Ord a => Tree a -> a -> Bool
 containsElementInTree Leaf _ = False
 containsElementInTree (Node elements left right) target =
     let currentX = NonEmpty.head elements in
@@ -223,7 +232,7 @@ containsElementInTree (Node elements left right) target =
         else if target > currentX then containsElementInTree right target
         else containsElementInTree left target
 
-insertElementIntoTree :: Ord a => TreeNode a -> a -> TreeNode a
+insertElementIntoTree :: Ord a => Tree a -> a -> Tree a
 insertElementIntoTree Leaf x = (Node (fromList [x]) Leaf Leaf)
 insertElementIntoTree (Node elements left right) x =
     let currentX = NonEmpty.head elements in
@@ -231,24 +240,24 @@ insertElementIntoTree (Node elements left right) x =
         else if x > currentX then (Node elements left (insertElementIntoTree right x))
         else (Node elements (insertElementIntoTree left x) right)
 
-buildTreeFromList :: Ord a => [a] -> TreeNode a
+buildTreeFromList :: Ord a => [a] -> Tree a
 buildTreeFromList []     = Leaf
 buildTreeFromList (x:xs) = insertElementIntoTree (buildTreeFromList xs) x
 
-removeElementFromTree :: Ord a => TreeNode a -> a -> TreeNode a
+removeElementFromTree :: Ord a => Tree a -> a -> Tree a
 removeElementFromTree Leaf _ = Leaf
 removeElementFromTree (Node elements left right) x =
     let currentX = NonEmpty.head elements in
         if currentX == x then removeHelper elements left right
         else if x > currentX then (Node elements left (removeElementFromTree right x))
         else (Node elements (removeElementFromTree left x) right) where
-            removeHelper :: NonEmpty a -> TreeNode a -> TreeNode a -> TreeNode a
+            removeHelper :: NonEmpty a -> Tree a -> Tree a -> Tree a
             removeHelper (_:|[]) leftNode Leaf  = leftNode
             removeHelper (_:|[]) Leaf rightNode = rightNode
             removeHelper (_:|[]) leftNode rightNode =
                 let (maximalElementsInLeft, leftWithoutMaxNode) = getAndRemoveMaxNode leftNode in
                     (Node (fromList maximalElementsInLeft) leftWithoutMaxNode rightNode) where
-                        getAndRemoveMaxNode :: TreeNode a -> ([a], TreeNode a)
+                        getAndRemoveMaxNode :: Tree a -> ([a], Tree a)
                         getAndRemoveMaxNode Leaf = error "can not get max node from empty tree"
                         getAndRemoveMaxNode (Node curElements _ Leaf) = ((toList curElements), Leaf)
                         getAndRemoveMaxNode (Node curElements l r) =
