@@ -1,14 +1,15 @@
 {-# LANGUAGE InstanceSigs #-}
-module Block5 
+module Block5
     (
       maybeConcat
     , eitherConcat
     , semigroupWorksForNonEmpty
-    , ThisOrThat(..)
     , semigroupWorksForThisOrThat
-    , Builder(..)
     , fromString
-    , toString, toStringWithFromStringMakeId
+    , toString
+    , toStringWithFromStringMakeId
+    , ThisOrThat(..)
+    , Builder(..)
     , Name(..)
     ) where
 
