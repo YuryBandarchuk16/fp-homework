@@ -1,4 +1,12 @@
-module Task5 (zero, succChurch, churchPlus, churchMult, churchToInt, testChurchWorks) where
+module Task5
+    (
+      zero
+    , succChurch
+    , churchPlus
+    , churchMult
+    , churchToInt
+    , testChurchWorks
+    ) where
 
 type Nat a = (a -> a) -> a -> a
 

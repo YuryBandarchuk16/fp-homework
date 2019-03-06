@@ -1,14 +1,23 @@
 {-# LANGUAGE InstanceSigs #-}
-module Block5 (maybeConcat, eitherConcat, semigroupWorksForNonEmpty, ThisOrThat(..), semigroupWorksForThisOrThat, Builder(..), fromString, toString, toStringWithFromStringMakeId, Name(..)) where
+module Block5 (
+    maybeConcat,
+    eitherConcat,
+    semigroupWorksForNonEmpty,
+    ThisOrThat(..),
+    semigroupWorksForThisOrThat,
+    Builder(..),
+    fromString,
+    toString, toStringWithFromStringMakeId,
+    Name(..)) where
 
-import Block4(NonEmpty(..))
+import Block4 (NonEmpty (..))
 
 -- Задание 1.
 
 maybeConcat :: [Maybe [a]] -> [a]
 maybeConcat elements = mconcat (map unwrapMaybeList elements) where
     unwrapMaybeList :: Maybe [a] -> [a]
-    unwrapMaybeList Nothing = mempty
+    unwrapMaybeList Nothing   = mempty
     unwrapMaybeList (Just xs) = xs
 
 -- Задание 1. Усложненная версия.
@@ -20,11 +29,11 @@ eitherConcat elements = let (lefts, rights)  = foldr extractor ([], []) elements
                                 extractor (Left x)  (ls, rs) = ((x:ls), rs)
                                 extractor (Right x) (ls, rs) = (ls, (x:rs))
 
--- Задание 2. 
+-- Задание 2.
 -- Инстанс Semigroup для NonEmpty был реализован в Block4, поэтому здесь просто примерчик
 
 semigroupWorksForNonEmpty :: Bool
-semigroupWorksForNonEmpty = 
+semigroupWorksForNonEmpty =
     (1 :| ([2, 3] :: [Int])) <> ((4 :| ([5, 6] :: [Int])) <> (7 :| ([8, 9] :: [Int]))) ==
     ((1 :| ([2, 3] :: [Int])) <> (4 :| ([5, 6] :: [Int]))) <> (7 :| ([8, 9] :: [Int]))
 
@@ -52,15 +61,15 @@ data Name = Name String deriving (Show)
 
 instance Semigroup Name where
     (<>) :: Name -> Name -> Name
-    (<>) (Name "") n = n
-    (<>) n (Name "") = n
+    (<>) (Name "") n       = n
+    (<>) n (Name "")       = n
     (<>) (Name a) (Name b) = Name (a ++ "." ++ b)
 
 instance Monoid Name where
     mempty :: Name
     mempty = Name ""
 
--- Задание 3. 
+-- Задание 3.
 
 data Builder = One Char | Many [Builder] deriving (Show)
 
@@ -73,12 +82,12 @@ instance Monoid Builder where
     mempty = Many []
 
 fromString :: String -> Builder
-fromString "" = mempty
+fromString ""     = mempty
 fromString (c:cs) = (One c) `mappend` (fromString cs)
 
 toString :: Builder -> String
-toString (Many []) = ""
-toString (One c) = [c]
+toString (Many [])       = ""
+toString (One c)         = [c]
 toString (Many builders) = mconcat $ map toString builders
 
 toStringWithFromStringMakeId :: Bool

@@ -1,46 +1,47 @@
 {-# LANGUAGE InstanceSigs #-}
-module Block3 
-            (
-                nextDay
-            ,   afterDays
-            ,   isWeekend
-            ,   daysToParty
-            ,   plus
-            ,   minus
-            ,   mult
-            ,   natToInt   
-            ,   intToNat
-            ,   equal
-            ,   isLess
-            ,   isLessOrEqual
-            ,   isGreater
-            ,   isGreaterOrEqual
-            ,   isEven
-            ,   divide
-            ,   remainder
-            ,   buildCastle
-            ,   buildChurch
-            ,   buildLibrary
-            ,   buildHouseForFamily
-            ,   moveLordInDaCastle
-            ,   buildWalls
-            ,   isEmptyTree
-            ,   countElementsInTree
-            ,   containsElementInTree
-            ,   insertElementIntoTree
-            ,   buildTreeFromList
-            ,   removeElementFromTree
-            ,   TreeNode(..)
-            ) where
+module Block3
+    (
+      nextDay
+    , afterDays
+    , isWeekend
+    , daysToParty
+    , plus
+    , minus
+    , mult
+    , natToInt
+    , intToNat
+    , equal
+    , isLess
+    , isLessOrEqual
+    , isGreater
+    , isGreaterOrEqual
+    , isEven
+    , divide
+    , remainder
+    , buildCastle
+    , buildChurch
+    , buildLibrary
+    , buildHouseForFamily
+    , moveLordInDaCastle
+    , buildWalls
+    , isEmptyTree
+    , countElementsInTree
+    , containsElementInTree
+    , insertElementIntoTree
+    , buildTreeFromList
+    , removeElementFromTree
+    , TreeNode(..)
+    , Day(..)
+    ) where
 
 import Data.List.NonEmpty as NonEmpty
 
 -- Задание 1.
 
-data Day = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday deriving (Show)  
+data Day = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday deriving (Show)
 
 nextDay :: Day -> Day
-nextDay day = case day of 
+nextDay day = case day of
     Monday    -> Tuesday
     Tuesday   -> Wednesday
     Wednesday -> Thursday
@@ -53,7 +54,7 @@ afterDays :: Day -> Int -> Day
 afterDays day numberOfDays = (foldl (.) id $ (replicate (numberOfDays `mod` 7) nextDay)) day
 
 isWeekend :: Day -> Bool
-isWeekend day = case day of 
+isWeekend day = case day of
     Saturday -> True
     Sunday   -> True
     _        -> False
@@ -83,29 +84,29 @@ defaultCastle :: HasCastle
 defaultCastle = (Castle NoLord NoWalls)
 
 buildCastle :: City -> (City, Bool)
-buildCastle (Megapolis NoCastle eitherCL livingHouses) = 
+buildCastle (Megapolis NoCastle eitherCL livingHouses) =
     ((Megapolis (BuiltCastle defaultCastle) eitherCL livingHouses), True)
 buildCastle city = (city, False)
 
 buildChurch :: City -> (City, Bool)
-buildChurch (Megapolis eitherCastle NoChurchNeitherLibrary livingHouses) = 
+buildChurch (Megapolis eitherCastle NoChurchNeitherLibrary livingHouses) =
     ((Megapolis eitherCastle Church livingHouses), True)
 buildChurch city = (city, False)
 
 buildLibrary :: City -> (City, Bool)
-buildLibrary (Megapolis eitherCastle NoChurchNeitherLibrary livingHouses) = 
+buildLibrary (Megapolis eitherCastle NoChurchNeitherLibrary livingHouses) =
     ((Megapolis eitherCastle Library livingHouses), True)
 buildLibrary city = (city, False)
 
 buildHouseForFamily :: City -> LivingFamily -> City
-buildHouseForFamily (Megapolis eitherCastle eitherCL livingHouses) family = 
-    let newLivingHouses = (extendLivingHouses livingHouses (House family)) in 
+buildHouseForFamily (Megapolis eitherCastle eitherCL livingHouses) family =
+    let newLivingHouses = (extendLivingHouses livingHouses (House family)) in
         (Megapolis eitherCastle eitherCL newLivingHouses) where
             extendLivingHouses :: LivingHouses -> OneHouse -> LivingHouses
             extendLivingHouses houses newHouse = ManyHouses houses newHouse
 
 moveLordInDaCastle :: City -> City
-moveLordInDaCastle (Megapolis eitherCastle eitherCL livingHouses) = 
+moveLordInDaCastle (Megapolis eitherCastle eitherCL livingHouses) =
     (Megapolis (moveLordHelper eitherCastle) eitherCL livingHouses) where
         moveLordHelper :: EitherCastle -> EitherCastle
         moveLordHelper NoCastle = error "Lord can not move in the castle because the city does not have a castle"
@@ -123,7 +124,7 @@ countNumberOfPeopleInHouses (SingleHouse (House family)) = getFamilySize family
 countNumberOfPeopleInHouses (ManyHouses livingHouses (House family)) = (getFamilySize family) + countNumberOfPeopleInHouses livingHouses
 
 buildWalls :: City -> City
-buildWalls (Megapolis (BuiltCastle (Castle Lord NoWalls)) eitherCL livingHouses) = 
+buildWalls (Megapolis (BuiltCastle (Castle Lord NoWalls)) eitherCL livingHouses) =
     if countNumberOfPeopleInHouses livingHouses >= 10 then (Megapolis (BuiltCastle (Castle Lord Walls)) eitherCL livingHouses)
     else error "Not enough people to build the walls. Needed at least 10 people."
 buildWalls (Megapolis (BuiltCastle (Castle Lord Walls)) _ _) = error "The city has walls already built"
@@ -135,22 +136,22 @@ buildWalls (Megapolis NoCastle _ _) = error "The city must have a castle for wal
 data Nat = Z | S Nat
 
 plus :: Nat -> Nat -> Nat
-plus Z x = x
-plus x Z = x
+plus Z x     = x
+plus x Z     = x
 plus (S x) y = plus x (S y)
 
 minus :: Nat -> Nat -> Nat
-minus x Z = x
-minus Z _ = Z
+minus x Z         = x
+minus Z _         = Z
 minus (S x) (S y) = minus x y
 
 mult :: Nat -> Nat -> Nat
-mult _ Z = Z
-mult Z _ = Z
+mult _ Z     = Z
+mult Z _     = Z
 mult (S x) y = plus y (mult x y)
 
 natToInt :: Nat -> Int
-natToInt Z = 0
+natToInt Z     = 0
 natToInt (S x) = 1 + natToInt x
 
 intToNat :: Int -> Nat
@@ -181,8 +182,8 @@ isGreaterOrEqual a b = isLessOrEqual b a
 -- Задание 3. Усложненная часть
 
 isEven :: Nat -> Bool
-isEven Z = True
-isEven (S Z) = False
+isEven Z         = True
+isEven (S Z)     = False
 isEven (S (S Z)) = True
 isEven (S (S x)) = isEven x
 
@@ -190,15 +191,15 @@ divide :: Nat -> Nat -> Nat
 divide _ Z = error "Division by zero"
 divide a b = calculateSubtractions a b where
               calculateSubtractions :: Nat -> Nat -> Nat
-              calculateSubtractions from what = 
-                if (isLess from what) then Z 
+              calculateSubtractions from what =
+                if (isLess from what) then Z
                 else S (calculateSubtractions (from `minus` what) what)
 
 remainder :: Nat -> Nat -> Nat
 remainder _ Z = error "Division by zero"
 remainder a b = a `minus` ((a `divide` b) `mult` b)
 
--- Задание 4. 
+-- Задание 4.
 
 data TreeNode a = Leaf | Node (NonEmpty a) (TreeNode a) (TreeNode a)
 
@@ -208,7 +209,7 @@ instance (Show a) => Show (TreeNode a) where
 
 isEmptyTree :: TreeNode a -> Bool
 isEmptyTree Leaf = True
-isEmptyTree _ = False
+isEmptyTree _    = False
 
 countElementsInTree :: TreeNode a -> Int
 countElementsInTree Leaf = 0
@@ -216,7 +217,7 @@ countElementsInTree (Node elements left right) = (NonEmpty.length elements) + (c
 
 containsElementInTree :: Ord a => TreeNode a -> a -> Bool
 containsElementInTree Leaf _ = False
-containsElementInTree (Node elements left right) target = 
+containsElementInTree (Node elements left right) target =
     let currentX = NonEmpty.head elements in
         if target == currentX then True
         else if target > currentX then containsElementInTree right target
@@ -224,19 +225,19 @@ containsElementInTree (Node elements left right) target =
 
 insertElementIntoTree :: Ord a => TreeNode a -> a -> TreeNode a
 insertElementIntoTree Leaf x = (Node (fromList [x]) Leaf Leaf)
-insertElementIntoTree (Node elements left right) x = 
+insertElementIntoTree (Node elements left right) x =
     let currentX = NonEmpty.head elements in
         if currentX == x then (Node (x :| (toList elements)) left right)
         else if x > currentX then (Node elements left (insertElementIntoTree right x))
         else (Node elements (insertElementIntoTree left x) right)
 
 buildTreeFromList :: Ord a => [a] -> TreeNode a
-buildTreeFromList [] = Leaf
+buildTreeFromList []     = Leaf
 buildTreeFromList (x:xs) = insertElementIntoTree (buildTreeFromList xs) x
 
 removeElementFromTree :: Ord a => TreeNode a -> a -> TreeNode a
 removeElementFromTree Leaf _ = Leaf
-removeElementFromTree (Node elements left right) x = 
+removeElementFromTree (Node elements left right) x =
     let currentX = NonEmpty.head elements in
         if currentX == x then removeHelper elements left right
         else if x > currentX then (Node elements left (removeElementFromTree right x))
@@ -244,13 +245,13 @@ removeElementFromTree (Node elements left right) x =
             removeHelper :: NonEmpty a -> TreeNode a -> TreeNode a -> TreeNode a
             removeHelper (_:|[]) leftNode Leaf  = leftNode
             removeHelper (_:|[]) Leaf rightNode = rightNode
-            removeHelper (_:|[]) leftNode rightNode = 
+            removeHelper (_:|[]) leftNode rightNode =
                 let (maximalElementsInLeft, leftWithoutMaxNode) = getAndRemoveMaxNode leftNode in
                     (Node (fromList maximalElementsInLeft) leftWithoutMaxNode rightNode) where
                         getAndRemoveMaxNode :: TreeNode a -> ([a], TreeNode a)
                         getAndRemoveMaxNode Leaf = error "can not get max node from empty tree"
                         getAndRemoveMaxNode (Node curElements _ Leaf) = ((toList curElements), Leaf)
-                        getAndRemoveMaxNode (Node curElements l r) = 
+                        getAndRemoveMaxNode (Node curElements l r) =
                             let (maxElements, restoredTree) = getAndRemoveMaxNode r in
                                 (maxElements, (Node curElements l restoredTree))
             removeHelper (_:|xs) leftNode rightNode = (Node (fromList xs) leftNode rightNode)

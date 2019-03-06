@@ -1,5 +1,12 @@
 {-# LANGUAGE InstanceSigs #-}
-module Block4 (Pair(Pair), NonEmpty(..), buildPair, mySplitOn, myJoinWith) where
+module Block4
+    (
+      Pair(..)
+    , NonEmpty(..)
+    , buildPair
+    , mySplitOn
+    , myJoinWith
+    ) where
 
 -- Задание 1.
 
@@ -21,13 +28,13 @@ instance Foldable NonEmpty where
     foldMap :: Monoid b => (a -> b) -> NonEmpty a -> b
     foldMap f (x :| xs) = (f x) `mappend` (foldMapHelper f xs) where
         foldMapHelper :: Monoid b => (a -> b) -> [a] -> b
-        foldMapHelper _ [] = mempty
+        foldMapHelper _ []     = mempty
         foldMapHelper g (y:ys) = foldMap g (y :| ys)
 
     foldr :: (a -> b -> b) -> b -> NonEmpty a -> b
     foldr f zero (x :| xs) = f x $ foldrHelper f zero xs where
         foldrHelper :: (a -> b -> b) -> b -> [a] -> b
-        foldrHelper _ z [] = z
+        foldrHelper _ z []     = z
         foldrHelper g z (y:ys) = foldr g z (y :| ys)
 
 instance Semigroup (NonEmpty a) where
@@ -40,7 +47,7 @@ toUsualList :: NonEmpty a -> [a]
 toUsualList (x :| xs) = x:xs
 
 toNonEmpty :: [a] -> NonEmpty a
-toNonEmpty [] = error "can not create non empty, the given list is empty"
+toNonEmpty []     = error "can not create non empty, the given list is empty"
 toNonEmpty (x:xs) = x :| xs
 
 -- Задание 2.

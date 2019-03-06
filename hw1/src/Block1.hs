@@ -1,9 +1,9 @@
-module Block1 
+module Block1
     (
-        order3,
-        smartReplicate,
-        contains,
-        stringSum,
+      order3
+    , smartReplicate
+    , contains
+    , stringSum
     ) where
 
 -- Задание 1.
@@ -22,7 +22,7 @@ order3 (a, b, c) =
 -- Задание 2.
 
 smartReplicate :: [Int] -> [Int]
-smartReplicate [] = []
+smartReplicate []     = []
 smartReplicate (x:xs) = (replicate x x) ++ (smartReplicate xs)
 
 -- Задание 3.
