@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Task4
     (
       fix
@@ -30,6 +31,6 @@ factorial = fix factorialHelper where
 
 mapFix :: (a -> b) -> [a] -> [b]
 mapFix = fix mapHelper where
-    -- mapHelper :: (a -> b) -> [a] -> [b]
+    mapHelper :: ((a -> b) -> [a] -> [b]) -> (a -> b) -> [a] -> [b]
     mapHelper _ _ [] = []
     mapHelper f mapFunc (x:xs) = (mapFunc x):(f mapFunc xs)
