@@ -3,12 +3,12 @@ version:             0.1.0.0
 synopsis:            Synopsis for task 2
 description:         Task 2 for FP ITMO course
 
-homepage:            https://github.com//fp-homework/tree/master/hw2#readme
+homepage:            https://github.com//fp-homework/tree/master/hw3#readme
 license:             MIT
 license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2019 Author name here
+author:              Yury Bandarchuk
+maintainer:          yury.bandarchuk@gmail.com
+copyright:           2019 Yury Bandarchuk
 
 category:            Web
 build-type:          Simple
@@ -18,9 +18,16 @@ tested-with:         GHC == 8.0.1
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
+  exposed-modules:     Block1
+                     , Block2
+                     , Block3
+                     , Block2JoinFromFish
+                     , Block2MonadFromFish
+                     , Block2FishFromMonad
+                     , Bonus
   ghc-options:         -Wall
   build-depends:       base >= 4.9 && < 5
+                     , mtl
   default-language:    Haskell2010
 
 executable hw2
@@ -29,4 +36,16 @@ executable hw2
   ghc-options:         -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , hw2
+                     , mtl
+  default-language:    Haskell2010
+
+test-suite hw2-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , hw2
+                     , mtl
+                     , hspec
+  ghc-options:         -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
